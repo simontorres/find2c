@@ -8,9 +8,9 @@ import matplotlib.pyplot as plt
 
 #cargo paquetes  
 iraf.noao.rv()
-iraf.task(fn2="find2c.cl")
-iraf.task(spbina="spbina.cl")
-iraf.task(scale="scale.cl")
+iraf.task(fn2="iraf/find2c.cl")
+iraf.task(spbina="iraf/spbina.cl")
+iraf.task(scale="iraf/scale.cl")
 iraf.noao.onedspec()
 iraf.noao.imred()
 iraf.noao.ccdred()
