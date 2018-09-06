@@ -6,15 +6,41 @@ import numpy as np
 from scipy.interpolate import griddata
 import matplotlib.pyplot as plt
 
-#cargo paquetes  
-iraf.noao.rv()
-iraf.task(fn2="iraf/find2c.cl")
-iraf.task(spbina="iraf/spbina.cl")
-iraf.task(scale="iraf/scale.cl")
-iraf.noao.onedspec()
-iraf.noao.imred()
-iraf.noao.ccdred()
-iraf.noao.echelle()
+
+class FindSecondComponent(object):
+
+  def __init__(self):
+    self._load_iraf_tasks()
+
+  def __call__(self, *args, **kwargs):
+    pass
+
+  @staticmethod
+  def _load_iraf_tasks():
+    """Load iraf tasks"""
+    iraf.noao.rv()
+    iraf.task(fn2="iraf/find2c.cl")
+    iraf.task(spbina="iraf/spbina.cl")
+    iraf.task(scale="iraf/scale.cl")
+    iraf.noao.onedspec()
+    iraf.noao.imred()
+    iraf.noao.ccdred()
+    iraf.noao.echelle()
+
+  def find_second_component(self,
+                            object_list,
+                            template_list,
+                            template_resolution='S',
+                            spectrum_a='A',
+                            spectrum_b='B',
+                            velocity_cm=24.86,
+                            q1=0.1,
+                            q2=0.7,
+                            dq=0.05):
+    pass
+
+  def _plot(self):
+    pass
 
 def f2c(res_tem="S",step_tem=100): # es el programa en si, todo en iraf
   #valores para los template
@@ -77,7 +103,7 @@ def gen_ar():
   iraf.sarit("ss","*","amortigua","tem")
   fig = plt.figure(figsize = (12,9.0))
   fig.subplots_adjust(hspace=0.4, bottom=0.06, top=0.94, left=0.12, right=0.94)
-  
+
   #ejecuto y ploteo fxcor
   ax2 = plt.subplot2grid((4,1), (0,0)) # grafico la func, de correlacion
 
@@ -113,60 +139,7 @@ def gen_ar():
   
 
   
-  #ploteo resultados de f2c
-  ax1 = plt.subplot2grid((4,1), (1,0), rowspan=3)
-  # define grid.
-  xi = np.linspace(min(x),max(x),1000)
-  yi = np.linspace(min(y),max(y),1000)
-  # grid the data.
-  zi = griddata((x, y), z, (xi[None,:], yi[:,None]), method='linear')
-  # contour the gridded data, plotting dots at the randomly spaced data points.
-  CS = plt.contour(xi,yi,zi,15,linewidths=0.5,colors='k')
-  CS = plt.contourf(xi,yi,zi,15,cmap=plt.cm.jet)
-  cb=plt.colorbar(orientation = 'horizontal',pad=0.1,aspect=30) # draw colorbar
-  cb.set_label('Intensity',fontsize=18)
-  # plot data points.
-  plt.scatter(x,y,marker='o',c='b',s=5)
-  plt.scatter(x[z.index(max(z))],y[z.index(max(z))],marker='o',color="w",s=20)
-  plt.xlabel('Mass ratio')
-  plt.ylabel('Secondary Temperature (K)')
-  ax1.set_xlabel(r'Mass ratio',fontsize=18)
-  ax1.set_ylabel(r'Secondary Temperature (K)',fontsize=18)
-  ax1.set_xlim(min(pasos),max(pasos))
-  ax1.set_ylim(min(temps),max(temps))
-  ax1.yaxis.set_major_locator(plt.MaxNLocator(6))
-  ax1.xaxis.set_major_locator(plt.MaxNLocator(8))
-  
-  ax2.text(0.03, 0.96,"T=%s K"%y[z.index(max(z))],ha='left', va='top',transform=ax2.transAxes,fontsize=20)
-  ax2.text(0.04, 0.5,"q=%s"%x[z.index(max(z))],ha='left', va='top',transform=ax2.transAxes,fontsize=20)
-  
-  
-  #plot scale
-  fig = plt.figure(figsize = (12,9.0))
-  fig.subplots_adjust(hspace=0.4, bottom=0.06, top=0.94, left=0.12, right=0.94)
-  ax2 = plt.subplot2grid((4,1), (0,0))  
-  
-  data = asciitable.read("tplsca.txt") #archivo de salida del scale
-  #ax2.set_xlim(min(data["col1"]),max(data["col1"]))
-  plt.plot(data["col1"],data["col2"],"-",color="red")
-  data = asciitable.read("obscale.txt")
-  plt.plot(data["col1"],data["col2"],"-",color="black")
-  ax2.yaxis.set_major_locator(plt.MaxNLocator(5))
-  ax2.set_xlabel(r'Wavelength ($\AA$)',fontsize=18)
-  ax2.set_ylabel(r'Intensity',fontsize=18)  
-  
-  data = asciitable.read("scale.txt") #archivo de salida del scale
-  ax2.set_xlim(min(data["col1"]),max(data["col1"])-1)
-  plt.plot(data["col1"],data["col2"]*100,"-",color="black")
-  ax2.yaxis.set_major_locator(plt.MaxNLocator(5))
-  ax2.set_xlabel(r'Wavelength ($\AA$)',fontsize=18)
-  ax2.set_ylabel(r'$I_2/I_T$ (%)',fontsize=18)
-  
-  
 
-  
-  #plt.savefig('mass_temp.pdf',format="pdf", bbox_inches='tight',dpi = 300)
-  plt.show()
 
 
 if __name__ == '__main__':
