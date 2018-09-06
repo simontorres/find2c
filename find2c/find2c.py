@@ -20,7 +20,7 @@ def f2c(res_tem="S",step_tem=100): # es el programa en si, todo en iraf
   #valores para los template
   if res_tem=="h" or res_tem=="H":
     lit="@template"
-    prin("Working with template spectra in hihg resolution")
+    print("Working with template spectra in hihg resolution")
   else:
     lit="@template"
     print("Working with template spectra in low resolution")
@@ -167,5 +167,8 @@ def gen_ar():
   
   #plt.savefig('mass_temp.pdf',format="pdf", bbox_inches='tight',dpi = 300)
   plt.show()
-  
+
+
+if __name__ == '__main__':
+  gen_ar()
   
